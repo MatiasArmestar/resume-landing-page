@@ -1,0 +1,35 @@
+﻿@using resume_landing_page.Services
+@implements IDisposable
+@inject LanguageService Language
+@inject TranslationService T
+
+<section id="presentation">
+	<img src="images/UI_AvatarIcon_Wriothesley.png" alt="Alternate Text" />
+	<div class="information">
+		<h1 class="name">Matias Armestar Heredia</h1>
+		<h2 class="resume">
+			@T.Get(Language.CurrentLanguage, "presentation.description")
+		</h2>
+	</div>
+</section>
+
+<div class="spacer"></div>
+
+@code {
+
+    protected override void OnInitialized()
+    {
+        Language.OnLanguageChanged += Refresh;
+    }
+
+    private void Refresh()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        Language.OnLanguageChanged -= Refresh;
+    }
+
+}

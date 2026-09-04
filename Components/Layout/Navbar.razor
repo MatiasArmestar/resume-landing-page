@@ -1,0 +1,84 @@
+﻿@using resume_landing_page.Services
+@implements IDisposable
+@inject LanguageService Language
+@inject TranslationService T
+
+<div class="nav-container">
+    <nav>
+
+        <button class="burger-btn @(isMenuOpen ? "active" : "")" @onclick="ToggleMenu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <ul class="@(isMenuOpen ? "nav-links active" : "nav-links")">
+
+            <li>
+                <a href="#presentation" @onclick="ToggleMenu">
+                    @T.Get(Language.CurrentLanguage, "nav.presentation")
+                </a>
+            </li>
+
+            <li>
+                <a href="#skills" @onclick="ToggleMenu">
+                    @T.Get(Language.CurrentLanguage, "nav.skills")
+                </a>
+            </li>
+
+            <li>
+                <a href="#certifications" @onclick="ToggleMenu">
+                    @T.Get(Language.CurrentLanguage, "nav.certifications")
+                </a>
+            </li>
+
+        </ul>
+
+        <div class="language-switch">
+
+            <span>ES</span>
+
+            <label class="switch">
+
+                <input type="checkbox"
+                       checked="@(Language.CurrentLanguage == "en")"
+                       @onchange="ToggleLanguage" />
+
+                <span class="slider"></span>
+
+            </label>
+
+            <span>EN</span>
+
+        </div>
+    </nav>
+</div>
+
+@code {
+    private bool isMenuOpen = false;
+
+    private void ToggleMenu()
+    {
+        isMenuOpen = !isMenuOpen;
+    }
+
+    protected override void OnInitialized()
+    {
+        Language.OnLanguageChanged += Refresh;
+    }
+
+    private void ToggleLanguage()
+    {
+        Language.ToggleLanguage();
+    }
+
+    private void Refresh()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        Language.OnLanguageChanged -= Refresh;
+    }
+}

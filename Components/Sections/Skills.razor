@@ -1,0 +1,132 @@
+﻿@using resume_landing_page.Components.Cards
+@using resume_landing_page.Services
+@implements IDisposable
+@inject LanguageService Language
+@inject TranslationService T
+@inject IJSRuntime JS
+
+<section id="skills">
+
+    <h2 class="skills-title">
+		@T.Get(Language.CurrentLanguage, "skills.title")
+    </h2>
+
+	<div class="categories" @ref="_slider">
+		<div class="categorie">
+
+			<h3>
+				@T.Get(Language.CurrentLanguage, "skills.languages")
+			</h3>
+
+			<div class="skills-grid">
+
+				<SkillCard File="images/net-core-icon.svg"
+						   Title="ASP.NET CORE"
+						   Description="@T.Get(Language.CurrentLanguage, "skills.aspnetcore")" />
+
+				<SkillCard File="images/xunit-icon.svg"
+						   Title="xUnit"
+						   Description="@T.Get(Language.CurrentLanguage, "skills.xunit")" />
+
+				<SkillCard File="images/blazor-icon.svg"
+						   Title="Blazor"
+						   Description="@T.Get(Language.CurrentLanguage, "skills.blazor")" />
+
+				<SkillCard File="images/spring-icon.svg"
+						   Title="Spring Boot"
+						   Description="@T.Get(Language.CurrentLanguage, "skills.springboot")" />
+
+				<SkillCard File="images/node-js-icon.svg"
+						   Title="Node JS"
+						   Description="@T.Get(Language.CurrentLanguage, "skills.nodejs")" />
+
+				<SkillCard File="images/pandas-icon.svg"
+						   Title="Pandas"
+						   Description="@T.Get(Language.CurrentLanguage, "skills.pandas")" />
+
+			</div>
+
+		</div>
+
+		<div class="categorie">
+
+			<h3>
+				@T.Get(Language.CurrentLanguage, "skills.tools")
+			</h3>
+
+			<div class="skills-grid">
+
+				<SkillCard File="images/github-icon.svg"
+						   Title="Github"
+						   Description="@T.Get(Language.CurrentLanguage, "skills.github")" />
+
+				<SkillCard File="images/microsoft-sql-server-icon.svg"
+						   Title="Microsoft SQL Server"
+						   Description="@T.Get(Language.CurrentLanguage, "skills.microsoftsqlserver")" />
+
+				<SkillCard File="images/excel-icon.svg"
+						   Title="Excel"
+						   Description="@T.Get(Language.CurrentLanguage, "skills.excel")" />
+
+				<SkillCard File="images/power-bi-icon.svg"
+						   Title="Power BI"
+						   Description="@T.Get(Language.CurrentLanguage, "skills.powerbi")" />
+
+				<SkillCard File="images/scrum-icon.svg"
+						   Title="Scrum"
+						   Description="@T.Get(Language.CurrentLanguage, "skills.scrum")" />
+
+				<SkillCard File="images/ui-path-icon.svg"
+						   Title="UI Path"
+						   Description="@T.Get(Language.CurrentLanguage, "skills.uipath")" />
+
+			</div>
+
+		</div>
+    </div>
+
+	<div class="slider-dots">
+		@for (int i = 0; i < TotalPages; i++)
+		{
+			<span class="dot @(CurrentPage == i ? "active" : "")">
+			</span>
+		}
+	</div>
+
+</section>
+
+@code {
+
+	protected override void OnInitialized()
+	{
+		Language.OnLanguageChanged += StateHasChanged;
+	}
+
+	public void Dispose()
+	{
+		Language.OnLanguageChanged -= StateHasChanged;
+		_objRef?.Dispose();
+	}
+
+	private ElementReference _slider;
+	private DotNetObjectReference<Skills>? _objRef;
+
+	private int CurrentPage;
+	private int TotalPages = 2;
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender)
+		{
+			_objRef = DotNetObjectReference.Create(this);
+			await JS.InvokeVoidAsync("slider.init", _slider, _objRef);
+		}
+	}
+
+	[JSInvokable]
+	public void SetPage(int page)
+	{
+		CurrentPage = page;
+		InvokeAsync(StateHasChanged);
+	}
+}

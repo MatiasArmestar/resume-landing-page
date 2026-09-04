@@ -1,0 +1,24 @@
+﻿<div class="skill-card">
+
+	<img src="@File">
+
+	<h4>@Title</h4>
+
+	<div class="skill-info">
+		@Description
+	</div>
+
+</div>
+
+@code {
+
+	[Parameter, EditorRequired]
+	public string File { get; set; } = string.Empty;
+
+	[Parameter, EditorRequired]
+	public string Title { get; set; } = string.Empty;
+
+	[Parameter, EditorRequired]
+	public string Description { get; set; } = string.Empty;
+
+}

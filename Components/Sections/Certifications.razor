@@ -1,0 +1,73 @@
+﻿@using resume_landing_page.Components.Cards
+@using resume_landing_page.Services
+@implements IDisposable
+@inject LanguageService Language
+@inject TranslationService T
+@inject IJSRuntime JS
+
+<section id="certifications">
+
+	<h2 class="certifications-title">
+		@T.Get(Language.CurrentLanguage, "certifications.title")
+	</h2>
+
+	<div class="certificates" @ref="_slider">
+
+		<CertificateCard File="images/toefl-itp-certificate.png"
+						 Title="@T.Get(Language.CurrentLanguage, "certifications.toefl")"
+						 Description="@T.Get(Language.CurrentLanguage, "certifications.toefl.issue")" />
+
+		<CertificateCard File="images/coursera-google-cybersecurity-certificate.png"
+						 Title="@T.Get(Language.CurrentLanguage, "certifications.cybersecurity")"
+						 Description="@T.Get(Language.CurrentLanguage, "certifications.cybersecurity.issue")" />
+
+		<CertificateCard File="images/icpna-certificate.png"
+						 Title="@T.Get(Language.CurrentLanguage, "certifications.english")"
+						 Description="@T.Get(Language.CurrentLanguage, "certifications.english.issue")" />
+
+	</div>
+
+	<div class="slider-dots">
+		@for (int i = 0; i < TotalPages; i++)
+		{
+			<span class="dot @(CurrentPage == i ? "active" : "")">
+			</span>
+		}
+	</div>
+</section>
+
+@code {
+
+	protected override void OnInitialized()
+	{
+		Language.OnLanguageChanged += StateHasChanged;
+	}
+
+	public void Dispose()
+	{
+		Language.OnLanguageChanged -= StateHasChanged;
+		_objRef?.Dispose();
+	}
+
+	private ElementReference _slider;
+	private DotNetObjectReference<Certifications>? _objRef;
+
+	private int CurrentPage;
+	private int TotalPages = 3;
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender)
+		{
+			_objRef = DotNetObjectReference.Create(this);
+			await JS.InvokeVoidAsync("slider.init", _slider, _objRef);
+		}
+	}
+
+	[JSInvokable]
+	public void SetPage(int page)
+	{
+		CurrentPage = page;
+		InvokeAsync(StateHasChanged);
+	}
+}
